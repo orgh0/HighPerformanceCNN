@@ -8,23 +8,33 @@ Member Functions:
 
 */
 
+#include <iostream>
 
 class Layer {
+
     public:
         Layer() {}
-        Layer() {const Layer&} = delete;
-        Layer& opertator = (const Layer&) = delete;
+        Layer(const Layer &other) = delete; // Delete copy constructor
+        Layer &operator=(const Layer &other) = delete;
 
-        Layer &link(Layer &next_layer){
+        // link to next layer
+        Layer &link(Layer &next_layer) {
             this->next = &next_layer;
             next_layer.prev = this;
+
             return next_layer;
         }
 
-        virtual void forward() { throw std::runtime_error("Forward Not implemented for this Layer")}
-        virtual void backward() { throw std::run_time_error("BackWard Not implemented for this Layer")}
+        virtual void forward(){
+            throw std::runtime_error("Forward not implemented for this Layer");
+        };
+
+        virtual void backward(){
+            throw std::runtime_error("Backward not implemented for this layer");
+        };
 
     protected:
         Layer *prev;
-        Layer *next:
-}
+        Layer *next;
+
+};
