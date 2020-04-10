@@ -1,4 +1,4 @@
-"""
+/*
 Class Layer
 Use: Base class for all ML layers we build.
 Member Functions:
@@ -6,7 +6,7 @@ Member Functions:
     forward: Virtual function, each layer will include it's specific Layer operation
     backward: Virtual function, each layer will include it's specific Layer operation
 
-"""
+*/
 
 
 class Layer {
