@@ -1,5 +1,7 @@
 
-#include <thrust/device_vector>
+#include <cuda_runtime.h>
+#include <thrust/device_vector.h>
+
 #include <vector>
 
 class Container {
@@ -23,7 +25,7 @@ class Container {
     private:
         void is_size_consistent();
 
-        thrust::devie_vector<float> data; //Transfering data into the cuda container
+        thrust::device_vector<float> data; //Transfering data into the cuda container
         std::vector<int> shape; //Store shape of the data
 
 };
