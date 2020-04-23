@@ -28,7 +28,7 @@ class Container {
   const thrust::device_vector<float> &get_data() const { return this->data; };
 
  private:
-  void check_size();  // check data/shape size
+  void is_size_consistent();  // check data/shape size
 
   thrust::device_vector<float> data;
   std::vector<int> shape;
