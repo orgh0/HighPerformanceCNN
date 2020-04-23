@@ -1,3 +1,4 @@
+#pragma once
 
 #include <cuda_runtime.h>
 #include <thrust/device_vector.h>
@@ -6,29 +7,29 @@
 #include <vector>
 
 class Container {
-    public:
-        explicit Container(const std::vector<int> &_shape);
-        explicit Container(const std::vector<int> &_shape, float value);
-        explicit Container(const std::vector<int> &_shape, const std::vector<float> &_data);
+ public:
+  explicit Container(const std::vector<int> &_shape);
+  explicit Container(const std::vector<int> &_shape, float value);
+  explicit Container(const std::vector<int> &_shape, const std::vector<float> &_data);
 
-        Container(const Container &other); //copy consturtor
-        Container &operator=(const Container &other); //overloading = operator
-        Container(Container &&other); //move constructor
-        Container &operator=(Container &&other); //overloading move = operator
+  // copy/move
+  Container(const Container &other);
+  Container &operator=(const Container &other);
+  Container(Container &&other);
+  Container &operator=(Container &&other);
 
-        std::vector<int> &get_shape() { return this-> shape; };
-        thrust::device_vector<float> &get_data() { return this->data; };
-        const std::vector<int> &get_shape() const { return this-> shape; };
-        const thrust::device_vector<float> &get_data() const { return this->data; };
+  void reshape(const std::vector<int> &_shape);
+  void resize(const std::vector<int> &_shape);
 
-        void reshape(const std::vector<int> &_shape);
-        void resize(const std::vector<int> &_shape);
+  // get
+  std::vector<int> &get_shape() { return this->shape; };
+  const std::vector<int> &get_shape() const { return this->shape; };
+  thrust::device_vector<float> &get_data() { return this->data; };
+  const thrust::device_vector<float> &get_data() const { return this->data; };
 
+ private:
+  void check_size();  // check data/shape size
 
-    private:
-        void is_size_consistent();
-
-        thrust::device_vector<float> data; //Transfering data into the cuda container
-        std::vector<int> shape; //Store shape of the data
-
+  thrust::device_vector<float> data;
+  std::vector<int> shape;
 };

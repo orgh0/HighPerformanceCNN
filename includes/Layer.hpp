@@ -9,6 +9,7 @@ Member Functions:
 */
 
 #include <iostream>
+#include <stdexcept>
 
 class Layer {
 
