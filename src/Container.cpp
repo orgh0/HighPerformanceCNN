@@ -1,5 +1,3 @@
-#pragma once
-
 #include <Container.hpp>
 #include <utils.hpp>
 

@@ -7,6 +7,7 @@ Member Functions:
     backward: Virtual function, each layer will include it's specific Layer operation
 
 */
+#pragma once
 
 #include <iostream>
 #include <stdexcept>
