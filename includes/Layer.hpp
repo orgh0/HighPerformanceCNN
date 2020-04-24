@@ -9,6 +9,7 @@ Member Functions:
 */
 #pragma once
 
+#include <Container.hpp>
 #include <iostream>
 #include <stdexcept>
 
@@ -35,8 +36,13 @@ class Layer {
             throw std::runtime_error("Backward not implemented for this layer");
         };
 
+        virtual Container *get_grad() { return this->grad.get(); }
+        virtual Container *get_output() { return this->output.get(); }
+
     protected:
         Layer *prev;
         Layer *next;
 
+        std::unique_ptr<Storage> grad;
+        std::unique_ptr<Storage> output;
 };

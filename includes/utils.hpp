@@ -13,3 +13,13 @@
       exit(1);                                                     \
     }                                                              \
   } while (0)
+
+
+#define INIT_STORAGE(storage_ptr, shape)            \
+  do {                                              \
+    if (storage_ptr.get() == nullptr) {             \
+      storage_ptr.reset(new Container(shape));        \
+    } else if (storage_ptr->get_shape() != shape) { \
+      storage_ptr->resize(shape);                   \
+    }                                               \
+  } while (0)
