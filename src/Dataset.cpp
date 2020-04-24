@@ -11,15 +11,11 @@
 DataSet::DataSet(std::string data_path, bool shuffle)
     : shuffle(shuffle), train_data_index(0), test_data_index(0) {
     // train data
-    this->read_images(data_path + "/train-images-idx3-ubyte",
-                    this->train_data);
-    this->read_labels(data_path + "/train-labels-idx1-ubyte",
-                    this->train_label);
+    this->read_images(data_path + "/train-images-idx3-ubyte", this->train_data);
+    this->read_labels(data_path + "/train-labels-idx1-ubyte", this->train_label);
     // test data
-    this->read_images(data_path + "/t10k-images-idx3-ubyte",
-                    this->test_data);
-    this->read_labels(data_path + "/t10k-labels-idx1-ubyte",
-                    this->test_label);
+    this->read_images(data_path + "/t10k-images-idx3-ubyte", this->test_data);
+    this->read_labels(data_path + "/t10k-labels-idx1-ubyte", this->test_label);
 }
 
 void DataSet::reset() {
@@ -31,22 +27,20 @@ void DataSet::reset() {
     unsigned int seed =
         std::chrono::system_clock::now().time_since_epoch().count() % 1234;
 
-    std::shuffle(this->train_data.begin(), this->train_data.end(),
-                    std::default_random_engine(seed));
-    std::shuffle(this->train_label.begin(), this->train_label.end(),
-                    std::default_random_engine(seed));
+    std::shuffle(this->train_data.begin(), this->train_data.end(), std::default_random_engine(seed));
+    std::shuffle(this->train_label.begin(), this->train_label.end(), std::default_random_engine(seed));
     }
 }
 
-bool Dataset::has_next(bool is_train) {
-    if(is_train) {
-        return this->train_data_index < this->train_data.size();
+bool DataSet::has_next(bool is_train) {
+    if (is_train) {
+    return this->train_data_index < this->train_data.size();
     } else {
-        return this->test_data_index < this->test_data.size();
+    return this->test_data_index < this->test_data.size();
     }
 }
 
-unsigned int Dataset::reverse_int(unsigned int i) {
+unsigned int DataSet::reverse_int(unsigned int i) {
     unsigned char ch1, ch2, ch3, ch4;
     ch1 = i & 255; //get last 8 bits
     ch2 = (i >> 8) & 255;
@@ -56,7 +50,7 @@ unsigned int Dataset::reverse_int(unsigned int i) {
 
 }
 
-void Dataset::read_images(std::string file_name, std::vector<std::vector<float>>& output) {
+void DataSet::read_images(std::string file_name, std::vector<std::vector<float>>& output) {
     std::ifstream file(file_name, std::ios::binary);
     if(file.is_open()) {
         unsigned int magic_number = 0;
@@ -120,7 +114,7 @@ void DataSet::read_labels(std::string file_name, std::vector<unsigned char>& out
     }
 }
 
-void Dataset::forward(int batch_size, bool is_train) {
+void DataSet::forward(int batch_size, bool is_train) {
     if (is_train) {
         int start = this->train_data_index;
         int end = std::min(this->train_data_index + batch_size, (int)this->train_data.size());
