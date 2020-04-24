@@ -124,41 +124,41 @@ void DataSet::forward(int batch_size, bool is_train) {
         std::vector<int> output_shape{size, 1, this->height, this->width}; //batch_size * 1 * im_height * im_width
         std::vector<int> output_label_shape{size, 10}; // batch_size * num_labels in dataset
         INIT_STORAGE(this->output, output_shape); //Initialize a Container to store the images
-        INIT_STORAGE(this->output_label, output_labels_shape);
+        INIT_STORAGE(this->output_label, output_label_shape);
         thrust::fill(this->output_label->get_data().begin(), this->output_label->get_data.end(), 0); //set output labels to 0
 
         int image_stride = 1 * this->height * this->width;
         int label_stride = 10;
 
         thrust::host_vector<float, thrust::system::cuda::experimental::pinned_allocator<float>>train_data_buffer;
-        train_data_buffer.reserve(size, image_stride);
+        train_data_buffer.reserve(size * image_stride);
 
         for(int i = start, i < end, i++) {
             train_data_buffer.insert(train_data_buffer.end(), this->train_data[i].begin(), this->train_data[i].end()); //insert data into container
-            this->output_label->get_data()[(i - start) * one_hot_stride + this->train_label[i]] = 1; 
+            this->output_label->get_data()[(i - start) * label_stride + this->train_label[i]] = 1; 
         }
         this->output->get_data() = train_data_buffer;
     } else {
         int start = this->test_data_index;
-        int end = std::min(this->test_data_index + batch_size, (int)this->test-data.size());
+        int end = std::min(this->test_data_index + batch_size, (int)this->test_data.size());
         this->test_data_index = end;
         int size = end - start;
 
         std::vector<int> output_shape{size, 1, this->height, this->width}; //batch_size * 1 * im_height * im_width
         std::vector<int> output_label_shape{size, 10}; // batch_size * num_labels in dataset
         INIT_STORAGE(this->output, output_shape); //Initialize a Container to store the images
-        INIT_STORAGE(this->output_label, output_labels_shape);
+        INIT_STORAGE(this->output_label, output_label_shape);
         thrust::fill(this->output_label->get_data().begin(), this->output_label->get_data.end(), 0); //set output labels to 0
 
         int image_stride = 1 * this->height * this->width;
         int label_stride = 10;
 
         thrust::host_vector<float, thrust::system::cuda::experimental::pinned_allocator<float>>test_data_buffer;
-        test_data_buffer.reserve(size, image_stride);
+        test_data_buffer.reserve(size * image_stride);
 
         for(int i = start, i < end, i++) {
             test_data_buffer.insert(test_data_buffer.end(), this->test_data[i].begin(), this->test_data[i].end()); //insert data into container
-            this->output_label->get_data()[(i - start) * one_hot_stride + this->test_label[i]] = 1; 
+            this->output_label->get_data()[(i - start) * label_stride + this->test_label[i]] = 1; 
         }
         this->output->get_data() = test_data_buffer;
     }
