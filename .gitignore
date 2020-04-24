@@ -33,3 +33,4 @@
 
 make
 settings.json
+mnist_data
