@@ -8,7 +8,7 @@
 #include <fstream>
 #include <random>
 
-Dataset::Dataset(std::string data_path, bool shuffle): shuffle(shuffle), train_data_index(0), test_data_index(0) {
+Dataset::Dataset(std::string data_path, bool shuffle) : shuffle(shuffle), train_data_index(0), test_data_index(0) {
     this->read_images(data_path + "/train-images-idx3-ubyte", this->train_data);
     this->read_labels(data_path + "/train-labels-idx1-ubyte", this->train_label);
 
@@ -60,26 +60,26 @@ void Dataset::read_images(std::string file_name, std::vector<std::vector<float>>
         file.read((char*)&num_cols, sizeof(num_cols));
 
         magic_number = this->reverse_int(magic_number);
-        number_of_images = this->reverse_int(number_of_images);
-        n_rows = this->reverse_int(n_rows);
-        n_cols = this->reverse_int(n_cols);
+        num_images = this->reverse_int(num_images);
+        num_rows = this->reverse_int(num_rows);
+        num_cols = this->reverse_int(num_cols);
 
         std::cout << file_name << std::endl;
         std::cout << "magic number = " << magic_number << std::endl;
-        std::cout << "number of images = " << number_of_images << std::endl;
-        std::cout << "rows = " << n_rows << std::endl;
-        std::cout << "cols = " << n_cols << std::endl;
+        std::cout << "number of images = " << num_images << std::endl;
+        std::cout << "rows = " << num_rows << std::endl;
+        std::cout << "cols = " << num_cols << std::endl;
 
-        this->height = n_rows;
-        this->width = n_cols;
+        this->height = num_rows;
+        this->width = num_cols;
 
-        std::vector<unsigned char> image(n_rows * n_cols);
-        std::vector<float> normalized_image(n_rows * n_cols);
+        std::vector<unsigned char> image(num_rows * num_cols);
+        std::vector<float> normalized_image(num_rows * num_cols);
 
-        for (int i = 0; i < number_of_images; i++) {
-            file.read((char*)&image[0], sizeof(unsigned char) * n_rows * n_cols);
+        for (int i = 0; i < num_images; i++) {
+            file.read((char*)&image[0], sizeof(unsigned char) * num_rows * num_cols);
 
-            for (int i = 0; i < n_rows * n_cols; i++) {
+            for (int i = 0; i < num_rows * num_cols; i++) {
                 normalized_image[i] = (float)image[i] / 255 - 0.5;
             }
             output.push_back(normalized_image);
@@ -92,17 +92,17 @@ void DataSet::read_labels(std::string file_name, std::vector<unsigned char>& out
     std::ifstream file(file_name, std::ios::binary);
     if (file.is_open()) {
         unsigned int magic_number = 0;
-        unsigned int number_of_images = 0;
+        unsigned int num_images = 0;
         file.read((char*)&magic_number, sizeof(magic_number));
-        file.read((char*)&number_of_images, sizeof(number_of_images));
+        file.read((char*)&num_images, sizeof(num_images));
 
         std::cout << file_name << std::endl;
         magic_number = this->reverse_int(magic_number);
-        number_of_images = this->reverse_int(number_of_images);
+        num_images = this->reverse_int(num_images);
         std::cout << "magic number = " << magic_number << std::endl;
-        std::cout << "number of images = " << number_of_images << std::endl;
+        std::cout << "number of images = " << num_images << std::endl;
 
-        for (int i = 0; i < number_of_images; i++) {
+        for (int i = 0; i < num_images; i++) {
         unsigned char label = 0;
         file.read((char*)&label, sizeof(label));
         output.push_back(label);
