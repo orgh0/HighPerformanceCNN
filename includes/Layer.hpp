@@ -43,6 +43,6 @@ class Layer {
         Layer *prev;
         Layer *next;
 
-        std::unique_ptr<Storage> grad;
-        std::unique_ptr<Storage> output;
+        std::unique_ptr<Container> grad;
+        std::unique_ptr<Container> output;
 };
