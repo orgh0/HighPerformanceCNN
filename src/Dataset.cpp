@@ -10,26 +10,31 @@
 
 DataSet::DataSet(std::string data_path, bool shuffle)
     : shuffle(shuffle), train_data_index(0), test_data_index(0) {
-  // train data
-  this->read_images(data_path + "/train-images-idx3-ubyte",
+    // train data
+    this->read_images(data_path + "/train-images-idx3-ubyte",
                     this->train_data);
-  this->read_labels(data_path + "/train-labels-idx1-ubyte",
+    this->read_labels(data_path + "/train-labels-idx1-ubyte",
                     this->train_label);
-  // test data
-  this->read_images(data_path + "/t10k-images-idx3-ubyte",
+    // test data
+    this->read_images(data_path + "/t10k-images-idx3-ubyte",
                     this->test_data);
-  this->read_labels(data_path + "/t10k-labels-idx1-ubyte",
+    this->read_labels(data_path + "/t10k-labels-idx1-ubyte",
                     this->test_label);
 }
 
-void Dataset::reset() {
+void DataSet::reset() {
     this->train_data_index = 0;
     this->test_data_index = 0;
 
-    if(shuffle) {
-        unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count() % 1234;
-        std::shuffle(this->train_data.begin(), this->train_data.end(), std::default_random_engine(seed));
-        std::shuffle(this->train_label.begin(), this->train_label.end(), std::default_random_engine(seed));
+    if (shuffle) {
+    // keep random seed same
+    unsigned int seed =
+        std::chrono::system_clock::now().time_since_epoch().count() % 1234;
+
+    std::shuffle(this->train_data.begin(), this->train_data.end(),
+                    std::default_random_engine(seed));
+    std::shuffle(this->train_label.begin(), this->train_label.end(),
+                    std::default_random_engine(seed));
     }
 }
 
