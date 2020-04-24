@@ -1,4 +1,5 @@
 #include <Dataset.hpp>
+#include <utils.hpp>
 
 int main() {
   DataSet dataset("./mnist_data", true);
