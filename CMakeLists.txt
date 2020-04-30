@@ -1,20 +1,31 @@
-# only for cmake --version >= 3.5.1
-cmake_minimum_required(VERSION 3.5.1)
+#Things to do
+# Load Cuda
+# Include project includes from ./includes
+# Include cuda from /usr/local/cuda-10.0/include
+# Set c++ to 14
+# Make exec for main.cpp as main
+
+
+cmake_minimum_required (VERSION 3.8)
 
 # project name
-project(HighPerformanceCNN)
+set(CMAKE_CUDA_COMPILER "/usr/local/cuda-10.0/bin/nvcc")
+project(HighPerformanceCNN LANGUAGES CUDA CXX)
 
-# creates the variable EXEC and sets it to hello
-set(EXEC hello)
+find_package(CUDA REQUIRED)
+include_directories(${CUDA_INCLUDE_DIRS})
 
-# set the C++14 standard
-set(CMAKE_CXX_STANDARD 14)
 
-# I../includes
-include_directories(includes)
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -std=c++14")
+endif()
 
-# puts all .cpp files inside src to the SOURCES variable
-file(GLOB SOURCES src/*.cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/includes)
 
-# compiles the files defined by SOURCES to generante the executable defined by EXEC
-add_executable(${EXEC} ${SOURCES})
+file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/includes/*.hpp)
+file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+set_source_files_properties(${SOURCES} PROPERTIES LANGUAGE CUDA)
+set_source_files_properties(${HEADERS} PROPERTIES LANGUAGE CUDA)
+
+add_executable(run ${SOURCES})
