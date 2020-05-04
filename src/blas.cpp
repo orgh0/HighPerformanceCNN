@@ -1,6 +1,5 @@
 #include<blas.hpp>
 #include<utils.hpp>
-#include<functors.hpp>
 
 #include <cuda_runtime.h>
 #include <thrust/functional.h>
