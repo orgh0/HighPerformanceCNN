@@ -23,4 +23,4 @@ private:
     void backward();                             // neural network backward
 
     std::unique_ptr<DataSet> dataset;
-}
+};

@@ -15,6 +15,13 @@ struct add_functor
     __host__ __device__ float operator()(const float &x) const { return x + e; }
 };
 
+struct mul_functor
+{
+    const float e;
+    mul_functor(float _e) : e(_e) {}
+    __host__ __device__ float operator()(const float &x) const { return x * e; }
+};
+
 void blas_add(const Container *input1, const Container *input2,
                   Container *outputs)
 {
@@ -41,4 +48,21 @@ void blas_subtract(const Container *input1, const Container *input2,
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       input2->get_data().begin(), outputs->get_data().begin(),
                       thrust::minus<float>());
+}
+
+void operator_mul(const Container *input1, const Container *input2,
+                  Container *outputs)
+{
+    CHECK_EQ(input1->get_data().size(), input2->get_data().size(),
+             "operator_mul: size error");
+
+    thrust::transform(input1->get_data().begin(), input1->get_data().end(),
+                      input2->get_data().begin(), outputs->get_data().begin(),
+                      thrust::multiplies<float>());
+}
+
+void operator_mul(const Container *input1, float value, Container *outputs)
+{
+    thrust::transform(input1->get_data().begin(), input1->get_data().end(),
+                      outputs->get_data().begin(), mul_functor(value));
 }
