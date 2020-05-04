@@ -7,9 +7,9 @@
 #include <device_launch_parameters.h>
 
 void blas_add(const Container *input1, const Container *input2,
-                  Container *outputs));
+                  Container *outputs);
 
 void blas_add(const Container *input1, float value, Container *outputs);
 
-void blas_sub(const Container *input1, const Container *input2,
+void blas_subtract(const Container *input1, const Container *input2,
               Container *outputs);
