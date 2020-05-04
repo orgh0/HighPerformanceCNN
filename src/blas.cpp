@@ -50,7 +50,7 @@ void blas_subtract(const Container *input1, const Container *input2,
                       thrust::minus<float>());
 }
 
-void operator_mul(const Container *input1, const Container *input2,
+void blas_multiple(const Container *input1, const Container *input2,
                   Container *outputs)
 {
     CHECK_EQ(input1->get_data().size(), input2->get_data().size(),
@@ -61,8 +61,19 @@ void operator_mul(const Container *input1, const Container *input2,
                       thrust::multiplies<float>());
 }
 
-void operator_mul(const Container *input1, float value, Container *outputs)
+void blas_multiply(const Container *input1, float value, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       outputs->get_data().begin(), mul_functor(value));
+}
+
+void blas_divide(const Container *input1, const Container *input2,
+                  Container *outputs)
+{
+    CHECK_EQ(input1->get_data().size(), input2->get_data().size(),
+             "operator_div: size error");
+
+    thrust::transform(input1->get_data().begin(), input1->get_data().end(),
+                      input2->get_data().begin(), outputs->get_data().begin(),
+                      thrust::divides<float>());
 }
