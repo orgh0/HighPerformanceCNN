@@ -1,5 +1,6 @@
 #include<blas.hpp>
 #include<utils.hpp>
+#include<functors.hpp>
 
 #include <cuda_runtime.h>
 #include <thrust/functional.h>
@@ -7,13 +8,6 @@
 
 #include <algorithm>
 #include <cfloat>
-
-struct add_functor
-{
-    const float e;
-    add_functor(float _e) : e(_e) {}
-    __host__ __device__ float operator()(const float &x) const { return x + e; }
-};
 
 void blas_add(const Container *input1, const Container *input2,
                   Container *outputs)
@@ -26,14 +20,14 @@ void blas_add(const Container *input1, const Container *input2,
                       thrust::plus<float>());
 }
 
-void operator_add(const Storage *input1, float value, Storage *outputs)
+void operator_add(const Container *input1, float value, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       outputs->get_data().begin(), add_functor(value));
 }
 
-void operator_sub(const Storage *input1, const Storage *input2,
-                  Storage *outputs)
+void operator_sub(const Container *input1, const Container *input2,
+                  Container *outputs)
 {
     CHECK_EQ(input1->get_data().size(), input2->get_data().size(),
              "operator_sub: size error");
