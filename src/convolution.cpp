@@ -7,40 +7,6 @@
 #include <memory>
 #include <vector>
 
-Convolution::Convolution(int height, int width, int channel_in, int channel_out, int kernel_h,
-           int kernel_w, int pad_h, int pad_w, int stride_h, int stride_w,
-           bool is_bias)
-    : height(height),
-      width(width),
-      channel_in(channel_in),
-      channel_out(channel_out),
-      kernel_h(kernel_h),
-      kernel_w(kernel_w),
-      pad_h(pad_h),
-      pad_w(pad_w),
-      stride_h(stride_h),
-      stride_w(stride_w),
-      is_bias(is_bias)
-{
-    int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
-    int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
-
-    this->filters.reset(
-        new Container({channel_out, channel_in, kernel_h, kernel_w}));
-    this->filters->xavier(channel_in * height * width,
-                          channel_out * height_out * width_out);
-    this->filters_grad.reset(
-        new Container({channel_out, channel_in, kernel_h, kernel_w}));
-
-    if (is_bias)
-    {
-        this->bias.reset(new Container({1, channel_out}));
-        this->bias_grad.reset(new Container({1, channel_out}));
-        this->bias->xavier(channel_in * height * width,
-                           channel_out * height_out * width_out);
-    }
-}
-
 // C*H*W >> (C_out*k_h*k_w) * (height_col * width_col)
 __global__ void my_im2col_h(const int n, const float *data_im, const int height,
                          const int width, const int kernel_h,
@@ -175,4 +141,38 @@ void my_col2im(const float *data_col, const int batch_size, const int channels,
                                        stride_w, height_col, width_col, data_im,
                                        im_stride, col_stride);
     CUDA_POST_KERNEL_CHECK;
+}
+
+Convolution::Convolution(int height, int width, int channel_in, int channel_out, int kernel_h,
+                         int kernel_w, int pad_h, int pad_w, int stride_h, int stride_w,
+                         bool is_bias)
+    : height(height),
+      width(width),
+      channel_in(channel_in),
+      channel_out(channel_out),
+      kernel_h(kernel_h),
+      kernel_w(kernel_w),
+      pad_h(pad_h),
+      pad_w(pad_w),
+      stride_h(stride_h),
+      stride_w(stride_w),
+      is_bias(is_bias)
+{
+    int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
+    int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
+
+    this->filters.reset(
+        new Container({channel_out, channel_in, kernel_h, kernel_w}));
+    this->filters->xavier(channel_in * height * width,
+                          channel_out * height_out * width_out);
+    this->filters_grad.reset(
+        new Container({channel_out, channel_in, kernel_h, kernel_w}));
+
+    if (is_bias)
+    {
+        this->bias.reset(new Container({1, channel_out}));
+        this->bias_grad.reset(new Container({1, channel_out}));
+        this->bias->xavier(channel_in * height * width,
+                           channel_out * height_out * width_out);
+    }
 }
