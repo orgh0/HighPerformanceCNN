@@ -69,6 +69,31 @@ void Container::resize(const std::vector<int> &_shape) {
   }
 }
 
+__global__ void container_xavier(float *a, int size, float scale,
+                               curandState *cs)
+{
+  int index = blockIdx.x * blockDim.x + threadIdx.x;
+  if (index < size)
+  {
+    curand_init(1234, index, 0, &cs[index]);
+    a[index] = (curand_uniform(&cs[index]) * 2 - 1) * scale;
+  }
+}
+
+void Container::xavier(size_t in_size, size_t out_size)
+{
+  float *a_ptr = RAW_PTR(this->data);
+  int size = this->data.size();
+  int grid_size = ceil((float)(size) / BLOCK_SIZE);
+
+  thrust::device_vector<curandState> cs(size);
+  curandState *cs_ptr = RAW_PTR(cs);
+  float scale = std::sqrt((float)6) / std::sqrt((float)(in_size) + out_size);
+  container_xavier<<<grid_size, BLOCK_SIZE>>>(a_ptr, size, scale, cs_ptr);
+
+  CUDA_POST_KERNEL_CHECK;
+}
+
 void Container::is_size_consistent() {
   int size = 1;
   for (int i = 0; i < this->shape.size(); i++) {
