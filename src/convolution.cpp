@@ -176,3 +176,61 @@ Convolution::Convolution(int height, int width, int channel_in, int channel_out,
                            channel_out * height_out * width_out);
     }
 }
+
+std::vector<std::pair<Storage *, Storage *>> Conv::parameters()
+{
+    if (this->is_bias)
+    {
+        return {std::make_pair(this->filters.get(), this->filters_grad.get()),
+                std::make_pair(this->bias.get(), this->bias_grad.get())};
+    }
+    else
+    {
+        return {std::make_pair(this->filters.get(), this->filters_grad.get())};
+    }
+}
+
+void Conv::forward()
+{
+    const Storage *input = this->pre->get_output();
+    int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
+    int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
+
+    std::vector<int> output_shape{input->get_shape()[0], this->channel_out,
+                                  height_out, width_out};
+    std::vector<int> cols_shape{input->get_shape()[0],
+                                channel_in * kernel_h * kernel_w,
+                                height_out * width_out};
+
+    INIT_STORAGE(this->output, output_shape);
+    INIT_STORAGE(this->cols, cols_shape);
+
+    operator_conv(input, this->filters.get(), this->cols.get(), pad_h, pad_w,
+                  stride_h, stride_w, this->output.get());
+
+    if (this->bias)
+    {
+        operator_conv_bias(this->output.get(), this->bias.get(),
+                           this->output.get());
+    }
+}
+
+void Conv::backward()
+{
+    const Storage *input = this->pre->get_output();
+    Storage *output_grad = this->next->get_grad();
+
+    int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
+    int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
+
+    INIT_STORAGE(this->grad, input->get_shape());
+
+    if (this->bias)
+    {
+        operator_d_conv_bias(output_grad, this->bias_grad.get(), this->temp);
+    }
+
+    operator_d_conv(output_grad, input, this->cols.get(), this->filters.get(),
+                    pad_h, pad_w, stride_h, stride_w, this->filters_grad.get(),
+                    this->grad.get(), this->temp);
+}
