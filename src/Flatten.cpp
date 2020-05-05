@@ -2,7 +2,7 @@
 
 #include<Layer.hpp>
 #include<Container.hpp>
-#include <utils.cuh>
+#include<utils.hpp>
 #include<Flatten.hpp>
 
 void Flatten::forward()
