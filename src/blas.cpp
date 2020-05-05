@@ -70,7 +70,7 @@ void blas_subtract(const Container *input1, const Container *input2,
                       thrust::minus<float>());
 }
 
-void blas_multiple(const Container *input1, const Container *input2,
+void blas_multiply(const Container *input1, const Container *input2,
                   Container *outputs)
 {
     CHECK_EQ(input1->get_data().size(), input2->get_data().size(),
