@@ -65,7 +65,7 @@ inline __host__ __device__ int loc2index(const int *loc, const int *shape,
   {                                                      \
     if (dict.find(key_name) == dict.end())               \
     {                                                    \
-      dict[key_name] = std::make_unique<Storage>(shape); \
+      dict[key_name] = std::make_unique<Container>(shape); \
     }                                                    \
     INIT_STORAGE(dict[key_name], shape);                 \
   } while (0)
