@@ -1,4 +1,4 @@
-#include<Convolutionolution.hpp>
+#include<convolution.hpp>
 
 #include <thrust/copy.h>
 #include <thrust/device_vector.h>
