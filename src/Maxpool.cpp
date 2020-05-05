@@ -1,4 +1,4 @@
-#include <max_pool.cuh>
+#include<Maxpool.hpp>
 
 __global__ void my_max_pool_h(
     const int nthreads, const float *const bottom_data, const int channels,
