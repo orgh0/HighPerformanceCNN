@@ -11,6 +11,11 @@
 #include<blas.hpp>
 #include<RMSProp.hpp>
 #include<convolution.hpp>
+#include<ReLU.hpp>
+#include<Maxpool.hpp>
+#include<Flatten.hpp>
+#include<Softmax.hpp>
+#include<Loss.hpp>
 
 class Model {
 public:
