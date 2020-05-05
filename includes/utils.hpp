@@ -69,3 +69,7 @@ inline __host__ __device__ int loc2index(const int *loc, const int *shape,
     }                                                    \
     INIT_STORAGE(dict[key_name], shape);                 \
   } while (0)
+
+#define CUDA_KERNEL_LOOP(i, n)                                 \
+  for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < (n); \
+       i += blockDim.x * gridDim.x)
