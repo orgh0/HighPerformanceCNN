@@ -14,16 +14,16 @@ public:
 
     void forward();
     void backward();
-    std::vector<std::pair<Storage *, Storage *>> parameters();
+    std::vector<std::pair<Container *, Container *>> parameters();
 
 private:
-    std::unique_ptr<Storage> filters;
-    std::unique_ptr<Storage> filters_grad;
-    std::unique_ptr<Storage> bias;
-    std::unique_ptr<Storage> bias_grad;
-    std::unique_ptr<Storage> cols;
+    std::unique_ptr<Container> filters;
+    std::unique_ptr<Container> filters_grad;
+    std::unique_ptr<Container> bias;
+    std::unique_ptr<Container> bias_grad;
+    std::unique_ptr<Container> cols;
 
-    std::unordered_map<std::string, std::unique_ptr<Storage>> temp;
+    std::unordered_map<std::string, std::unique_ptr<Container>> temp;
 
     int height;
     int width;

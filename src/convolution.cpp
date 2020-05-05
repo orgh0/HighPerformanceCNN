@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-Conv::Conv(int height, int width, int channel_in, int channel_out, int kernel_h,
+Convolution::Convolution(int height, int width, int channel_in, int channel_out, int kernel_h,
            int kernel_w, int pad_h, int pad_w, int stride_h, int stride_w,
            bool is_bias)
     : height(height),
@@ -42,7 +42,7 @@ Conv::Conv(int height, int width, int channel_in, int channel_out, int kernel_h,
 }
 
 // C*H*W >> (C_out*k_h*k_w) * (height_col * width_col)
-__global__ void im2col_h(const int n, const float *data_im, const int height,
+__global__ void my_im2col_h(const int n, const float *data_im, const int height,
                          const int width, const int kernel_h,
                          const int kernel_w, const int pad_h, const int pad_w,
                          const int stride_h, const int stride_w,
@@ -88,7 +88,7 @@ __global__ void im2col_h(const int n, const float *data_im, const int height,
     }
 }
 
-void im2col(const float *data_im, const int batch_size, const int channels,
+void my_im2col(const float *data_im, const int batch_size, const int channels,
             const int height, const int width, const int kernel_h,
             const int kernel_w, const int pad_h, const int pad_w,
             const int stride_h, const int stride_w, float *data_col)
@@ -102,14 +102,14 @@ void im2col(const float *data_im, const int batch_size, const int channels,
     int im_stride = channels * height * width;
     int col_stride = channels * kernel_h * kernel_w * height_col * width_col;
     dim3 dim_grid(ceil((float)size / BLOCK_SIZE), batch_size);
-    im2col_h<<<dim_grid, BLOCK_SIZE>>>(
+    my_im2col_h<<<dim_grid, BLOCK_SIZE>>>(
         size, data_im, height, width, kernel_h, kernel_w, pad_h, pad_w, stride_h,
         stride_w, height_col, width_col, data_col, im_stride, col_stride);
     CUDA_POST_KERNEL_CHECK;
 }
 
 // (C_out*k_h*k_w) * (height_col * width_col) >> C*H*W
-__global__ void col2im_h(const int n, const float *data_col, const int height,
+__global__ void my_col2im_h(const int n, const float *data_col, const int height,
                          const int width, const int channels,
                          const int kernel_h, const int kernel_w,
                          const int pad_h, const int pad_w, const int stride_h,
@@ -156,7 +156,7 @@ __global__ void col2im_h(const int n, const float *data_col, const int height,
     }
 }
 
-void col2im(const float *data_col, const int batch_size, const int channels,
+void my_col2im(const float *data_col, const int batch_size, const int channels,
             const int height, const int width, const int kernel_h,
             const int kernel_w, const int pad_h, const int pad_w,
             const int stride_h, const int stride_w, float *data_im)
@@ -170,7 +170,7 @@ void col2im(const float *data_col, const int batch_size, const int channels,
     int im_stride = channels * height * width;
     int col_stride = channels * kernel_h * kernel_w * height_col * width_col;
     dim3 dim_grid(ceil((float)size / BLOCK_SIZE), batch_size);
-    col2im_h<<<dim_grid, BLOCK_SIZE>>>(size, data_col, height, width, channels,
+    my_col2im_h<<<dim_grid, BLOCK_SIZE>>>(size, data_col, height, width, channels,
                                        kernel_h, kernel_w, pad_h, pad_w, stride_h,
                                        stride_w, height_col, width_col, data_im,
                                        im_stride, col_stride);
