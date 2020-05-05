@@ -47,9 +47,9 @@ __global__ void my_max_pool_h(
     }
 }
 
-void my_max_pool(const Storage *inputs, Storage *mask, int kernel_h,
+void my_max_pool(const Container *inputs, Container *mask, int kernel_h,
                        int kernel_w, int pad_h, int pad_w, int stride_h,
-                       int stride_w, Storage *output)
+                       int stride_w, Container *output)
 {
     CHECK_EQ(inputs->get_shape().size(), 4,
              "operator_max_pool: inputs shape error");
@@ -121,10 +121,10 @@ __global__ void my_d_max_pool_h(
     }
 }
 
-void my_d_max_pool(const Storage *output_grads, const Storage *inputs,
-                         const Storage *mask, int kernel_h, int kernel_w,
+void my_d_max_pool(const Container *output_grads, const Container *inputs,
+                         const Container *mask, int kernel_h, int kernel_w,
                          int pad_h, int pad_w, int stride_h, int stride_w,
-                         Storage *inputs_grad)
+                         Container *inputs_grad)
 {
     CHECK_EQ(output_grads->get_shape().size(), 4,
              "operator_d_max_pool: output_grads shape error");
@@ -159,7 +159,7 @@ void my_d_max_pool(const Storage *output_grads, const Storage *inputs,
 
 void MaxPool::forward()
 {
-    const Storage *input = this->prev->get_output();
+    const Container *input = this->prev->get_output();
 
     int batch_size = *(input->get_shape().rbegin() + 3);
     int channels = *(input->get_shape().rbegin() + 2);
@@ -182,8 +182,8 @@ void MaxPool::forward()
 
 void MaxPool::backward()
 {
-    const Storage *input = this->prev->get_output();
-    const Storage *output_grad = this->next->get_grad();
+    const Container *input = this->prev->get_output();
+    const Container *output_grad = this->next->get_grad();
 
     INIT_STORAGE(this->grad, input->get_shape());
 
