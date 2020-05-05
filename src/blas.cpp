@@ -98,25 +98,25 @@ struct pow_functor
     }
 };
 
-void operator_pow(const Container *input1, float e, Container *outputs)
+void blas_pow(const Container *input1, float e, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       outputs->get_data().begin(), pow_functor(e));
 }
 
-void operator_log(const Container *input1, Container *outputs)
+void blas_log(const Container *input1, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       outputs->get_data().begin(), log_functor());
 }
 
-void operator_exp(const Container *input1, Container *outputs)
+void blas_exp(const Container *input1, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
                       outputs->get_data().begin(), exp_functor());
 }
 
-__global__ void operator_matmul_h(const float *input1, const float *input2,
+__global__ void blas_matmul_operator_h(const float *input1, const float *input2,
                                   float *output, int height, int k, int width,
                                   int broadcast)
 {
@@ -161,7 +161,7 @@ __global__ void operator_matmul_h(const float *input1, const float *input2,
         output[row * width + col] = v;
 }
 
-void operator_matmul(const Container *input1, const Container *input2,
+void blas_matmul(const Container *input1, const Container *input2,
                      Container *outputs, int broadcast)
 {
     int height = *(input1->get_shape().rbegin() + 1);
@@ -189,13 +189,13 @@ void operator_matmul(const Container *input1, const Container *input2,
     dim3 dim_block(TILE_SIZE, TILE_SIZE);
     dim3 dim_grid(ceil((float)width / TILE_SIZE), ceil((float)height / TILE_SIZE),
                   batch_size);
-    operator_matmul_h<<<dim_grid, dim_block>>>(input1_ptr, input2_ptr, output_ptr,
+    blas_matmul_operator_h<<<dim_grid, dim_block>>>(input1_ptr, input2_ptr, output_ptr,
                                                height, k, width, broadcast);
 
     CUDA_POST_KERNEL_CHECK;
 }
 
-__global__ void operator_transpose_h(const float *in, float *out, int height,
+__global__ void blas_transpose_h(const float *in, float *out, int height,
                                      int width)
 {
     __shared__ float tile[TILE_SIZE][TILE_SIZE];
@@ -224,7 +224,7 @@ __global__ void operator_transpose_h(const float *in, float *out, int height,
     }
 }
 
-void operator_transpose(const Container *input1, Container *outputs)
+void blas_transpose(const Container *input1, Container *outputs)
 {
     int height = *(input1->get_shape().rbegin() + 1);
     int width = *(input1->get_shape().rbegin());
@@ -242,13 +242,13 @@ void operator_transpose(const Container *input1, Container *outputs)
     dim3 dim_block(TILE_SIZE, TILE_SIZE);
     dim3 dim_grid(ceil((float)width / TILE_SIZE), ceil((float)height / TILE_SIZE),
                   batch_size);
-    operator_transpose_h<<<dim_grid, dim_block>>>(input1_ptr, output_ptr, height,
+    blas_transpose_h<<<dim_grid, dim_block>>>(input1_ptr, output_ptr, height,
                                                   width);
 
     CUDA_POST_KERNEL_CHECK;
 }
 
-__global__ void operator_mean_h(const float *input1, float *output,
+__global__ void blas_mean_h(const float *input1, float *output,
                                 const int *input1_shape, int input1_dims,
                                 const int *temp_shape, int dim, int dim_stride,
                                 int size)
@@ -281,7 +281,7 @@ __global__ void operator_mean_h(const float *input1, float *output,
     }
 }
 
-void operator_mean(const Container *input1, int dim, Container *outputs)
+void blas_mean(const Container *input1, int dim, Container *outputs)
 {
     // input
     const float *input1_ptr = RAW_PTR(input1->get_data());
@@ -306,14 +306,14 @@ void operator_mean(const Container *input1, int dim, Container *outputs)
     int grid_size = ceil((float)(size) / BLOCK_SIZE);
     int shared_memory_size = BLOCK_SIZE * input1_dims * sizeof(int);
 
-    operator_mean_h<<<grid_size, BLOCK_SIZE, shared_memory_size>>>(
+    blas_mean_h<<<grid_size, BLOCK_SIZE, shared_memory_size>>>(
         input1_ptr, output_ptr, input1_shape_ptr, input1_dims, temp_shape_ptr,
         dim, dim_stride, size);
 
     CUDA_POST_KERNEL_CHECK;
 }
 
-__global__ void operator_sum_h(const float *input1, float *output,
+__global__ void blas_sum_h(const float *input1, float *output,
                                const int *input1_shape, int input1_dims,
                                const int *temp_shape, int dim, int dim_stride,
                                int size)
@@ -345,7 +345,7 @@ __global__ void operator_sum_h(const float *input1, float *output,
     }
 }
 
-void operator_sum(const Container *input1, int dim, Container *outputs)
+void blas_sum(const Container *input1, int dim, Container *outputs)
 {
     // input
     const float *input1_ptr = RAW_PTR(input1->get_data());
@@ -370,7 +370,7 @@ void operator_sum(const Container *input1, int dim, Container *outputs)
     int grid_size = ceil((float)(size) / BLOCK_SIZE);
     int shared_memory_size = BLOCK_SIZE * input1_dims * sizeof(int);
 
-    operator_sum_h<<<grid_size, BLOCK_SIZE, shared_memory_size>>>(
+    blas_sum_h<<<grid_size, BLOCK_SIZE, shared_memory_size>>>(
         input1_ptr, output_ptr, input1_shape_ptr, input1_dims, temp_shape_ptr,
         dim, dim_stride, size);
 
