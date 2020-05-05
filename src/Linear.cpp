@@ -5,7 +5,7 @@
 void my_linear_layer(const Container *inputs, const Container *weights,
                      Container *output)
 {
-    operator_matmul(inputs, weights, output);
+    blas_matmul(inputs, weights, output);
 }
 
 void my_d_linear_layer(
