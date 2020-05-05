@@ -12,6 +12,7 @@
 #include<RMSProp.hpp>
 #include<convolution.hpp>
 #include<ReLU.hpp>
+#include<Linear.hpp>
 #include<Maxpool.hpp>
 #include<Flatten.hpp>
 #include<Softmax.hpp>
