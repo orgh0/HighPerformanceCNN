@@ -34,7 +34,7 @@ void my_d_relu(const Container *outputs_grad, const Container *input1,
 
 void ReLU::forward()
 {
-    Container *input = this->pre->get_output();
+    Container *input = this->prev->get_output();
 
     if (this->inplace)
     {
@@ -49,7 +49,7 @@ void ReLU::forward()
 
 void ReLU::backward()
 {
-    Container *input = this->pre->get_output();
+    Container *input = this->prev->get_output();
     Container *output_grad = this->next->get_grad();
 
     if (this->inplace)
