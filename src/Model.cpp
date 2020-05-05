@@ -3,7 +3,7 @@
 Model::Model(std::string dataset_path, float learning_rate, float l2,
                float beta)
 {
-    dataset.reset(new DataSet(minst_data_path, true));
+    dataset.reset(new DataSet(dataset_path, true));
 
     conv1.reset(new Convolution(28, 28, 1, 32, 5, 5, 0, 0, 1, 1, true));
     conv1_relu.reset(new ReLU(true));
@@ -27,21 +27,21 @@ Model::Model(std::string dataset_path, float learning_rate, float l2,
     nll_loss.reset(new NLLLoss());
 
     // connect
-    dataset->connect(*conv1)
-        .connect(*conv1_relu)
-        .connect(*max_pool1)
-        .connect(*conv2)
-        .connect(*conv2_relu)
-        .connect(*max_pool2)
-        .connect(*conv3)
-        .connect(*conv3_relu)
-        .connect(*flatten)
-        .connect(*fc1)
-        .connect(*fc1_relu)
-        .connect(*fc2)
-        .connect(*fc2_relu)
-        .connect(*log_softmax)
-        .connect(*nll_loss);
+    dataset->link(*conv1)
+        .link(*conv1_relu)
+        .link(*max_pool1)
+        .link(*conv2)
+        .link(*conv2_relu)
+        .link(*max_pool2)
+        .link(*conv3)
+        .link(*conv3_relu)
+        .link(*flatten)
+        .link(*fc1)
+        .link(*fc1_relu)
+        .link(*fc2)
+        .link(*fc2_relu)
+        .link(*log_softmax)
+        .link(*nll_loss);
 
     // regist parameters
     rmsprop.reset(new RMSProp(learning_rate, l2, beta));
