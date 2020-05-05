@@ -32,6 +32,16 @@ struct log_functor
     __host__ __device__ float operator()(const float &x) const { return logf(x); }
 };
 
+struct pow_functor
+{
+    const float e;
+    pow_functor(float _e) : e(_e) {}
+    __host__ __device__ float operator()(const float &x) const
+    {
+        return powf(x, e);
+    }
+};
+
 void blas_add(const Container *input1, const Container *input2,
                   Container *outputs)
 {
@@ -88,16 +98,6 @@ void blas_divide(const Container *input1, const Container *input2,
                       thrust::divides<float>());
 }
 
-struct pow_functor
-{
-    const float e;
-    pow_functor(float _e) : e(_e) {}
-    __host__ __device__ float operator()(const float &x) const
-    {
-        return powf(x, e);
-    }
-};
-
 void blas_pow(const Container *input1, float e, Container *outputs)
 {
     thrust::transform(input1->get_data().begin(), input1->get_data().end(),
@@ -116,7 +116,7 @@ void blas_exp(const Container *input1, Container *outputs)
                       outputs->get_data().begin(), exp_functor());
 }
 
-__global__ void blas_matmul_operator_h(const float *input1, const float *input2,
+__global__ void blas_matmul_h(const float *input1, const float *input2,
                                   float *output, int height, int k, int width,
                                   int broadcast)
 {
@@ -189,7 +189,7 @@ void blas_matmul(const Container *input1, const Container *input2,
     dim3 dim_block(TILE_SIZE, TILE_SIZE);
     dim3 dim_grid(ceil((float)width / TILE_SIZE), ceil((float)height / TILE_SIZE),
                   batch_size);
-    blas_matmul_operator_h<<<dim_grid, dim_block>>>(input1_ptr, input2_ptr, output_ptr,
+    blas_matmul_h<<<dim_grid, dim_block>>>(input1_ptr, input2_ptr, output_ptr,
                                                height, k, width, broadcast);
 
     CUDA_POST_KERNEL_CHECK;
