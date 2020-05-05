@@ -26,16 +26,16 @@ Convolution::Convolution(int height, int width, int channel_in, int channel_out,
     int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
 
     this->filters.reset(
-        new Storage({channel_out, channel_in, kernel_h, kernel_w}));
+        new Container({channel_out, channel_in, kernel_h, kernel_w}));
     this->filters->xavier(channel_in * height * width,
                           channel_out * height_out * width_out);
     this->filters_grad.reset(
-        new Storage({channel_out, channel_in, kernel_h, kernel_w}));
+        new Container({channel_out, channel_in, kernel_h, kernel_w}));
 
     if (is_bias)
     {
-        this->bias.reset(new Storage({1, channel_out}));
-        this->bias_grad.reset(new Storage({1, channel_out}));
+        this->bias.reset(new Container({1, channel_out}));
+        this->bias_grad.reset(new Container({1, channel_out}));
         this->bias->xavier(channel_in * height * width,
                            channel_out * height_out * width_out);
     }
