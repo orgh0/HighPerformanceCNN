@@ -59,3 +59,13 @@ inline __host__ __device__ int loc2index(const int *loc, const int *shape,
   }
   return index;
 }
+
+#define INIT_TEMP(dict, key_name, shape)                 \
+  do                                                     \
+  {                                                      \
+    if (dict.find(key_name) == dict.end())               \
+    {                                                    \
+      dict[key_name] = std::make_unique<Storage>(shape); \
+    }                                                    \
+    INIT_STORAGE(dict[key_name], shape);                 \
+  } while (0)

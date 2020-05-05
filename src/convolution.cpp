@@ -365,7 +365,7 @@ std::vector<std::pair<Container *, Container *>> Convolution::parameters()
 
 void Convolution::forward()
 {
-    const Container *input = this->pre->get_output();
+    const Container *input = this->prev->get_output();
     int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
     int width_out = (width + 2 * pad_w - kernel_w) / stride_w + 1;
 
@@ -390,7 +390,7 @@ void Convolution::forward()
 
 void Convolution::backward()
 {
-    const Container *input = this->pre->get_output();
+    const Container *input = this->prev->get_output();
     Container *output_grad = this->next->get_grad();
 
     int height_out = (height + 2 * pad_h - kernel_h) / stride_h + 1;
