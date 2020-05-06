@@ -20,7 +20,7 @@ class Container {
 
   void reshape(const std::vector<int> &_shape);
   void resize(const std::vector<int> &_shape);
-  void xavier(size_t in_size, size_t out_size);
+  void random_fill(size_t in_size, size_t out_size);
 
   // get
   std::vector<int> &get_shape() { return this->shape; };

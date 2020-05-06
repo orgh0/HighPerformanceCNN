@@ -9,8 +9,8 @@
 #define BETA 0.99
 
 int main() {
-  DataSet dataset("./mnist_data", true);
-  dataset.forward(64, true);
+  // DataSet dataset("./mnist_data", true);
+  // dataset.forward(64, true);
 
   auto cudaStatus = cudaSetDevice(0);
   CHECK_EQ(cudaStatus, cudaSuccess,
@@ -18,4 +18,5 @@ int main() {
 
   Model mnist("./mnist_data", LEARNING_RATE, L2, BETA);
   mnist.train(EPOCHS, BATCH_SIZE);
+  mnist.test(30);
 }

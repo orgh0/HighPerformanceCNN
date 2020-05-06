@@ -70,13 +70,13 @@ Linear::Linear(int in_size, int out_size, bool is_bias)
 {
     this->weights.reset(new Container({in_size, out_size}));
     this->weights_grad.reset(new Container({in_size, out_size}));
-    this->weights->xavier(in_size, out_size);
+    this->weights->random_fill(in_size, out_size);
 
     if (this->is_bias)
     {
         this->bias.reset(new Container({1, out_size}));
         this->bias_grad.reset(new Container({1, out_size}));
-        this->bias->xavier(in_size, out_size);
+        this->bias->random_fill(in_size, out_size);
     }
 }
 

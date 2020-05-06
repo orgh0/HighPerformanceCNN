@@ -182,7 +182,7 @@ void convolution_operator(const Container *inputs, Container *filters, Container
   filters->reshape({channel_out, channel_in * kernel_h * kernel_w});
   blas_matmul(filters, cols, output, 1);  // broadcast param 1
 
-  // recover shapre
+  // recover shape
   filters->reshape({channel_out, channel_in, kernel_h, kernel_w});
 }
 
@@ -336,7 +336,7 @@ Convolution::Convolution(int height, int width, int channel_in, int channel_out,
 
     this->filters.reset(
         new Container({channel_out, channel_in, kernel_h, kernel_w}));
-    this->filters->xavier(channel_in * height * width,
+    this->filters->random_fill(channel_in * height * width,
                           channel_out * height_out * width_out);
     this->filters_grad.reset(
         new Container({channel_out, channel_in, kernel_h, kernel_w}));
@@ -345,7 +345,7 @@ Convolution::Convolution(int height, int width, int channel_in, int channel_out,
     {
         this->bias.reset(new Container({1, channel_out}));
         this->bias_grad.reset(new Container({1, channel_out}));
-        this->bias->xavier(channel_in * height * width,
+        this->bias->random_fill(channel_in * height * width,
                            channel_out * height_out * width_out);
     }
 }

@@ -8,8 +8,8 @@
 
 Container::Container(const std::vector<int> &_shape) : shape(_shape) {
   int size = 1;
-  for (int i = 0; i < _shape.size(); i++) {
-    size *= _shape[i];
+  for (auto it : _shape) {
+    size *= it;
   }
 
   this->data.resize(size);
@@ -17,8 +17,8 @@ Container::Container(const std::vector<int> &_shape) : shape(_shape) {
 
 Container::Container(const std::vector<int> &_shape, float value) : shape(_shape) {
   int size = 1;
-  for (int i = 0; i < _shape.size(); i++) {
-    size *= _shape[i];
+  for (auto it : _shape) {
+    size *= it;
   }
 
   this->data.resize(size, value);
@@ -69,7 +69,7 @@ void Container::resize(const std::vector<int> &_shape) {
   }
 }
 
-__global__ void container_xavier(float *a, int size, float scale,
+__global__ void container_random_fill(float *a, int size, float scale,
                                curandState *cs)
 {
   int index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -80,7 +80,7 @@ __global__ void container_xavier(float *a, int size, float scale,
   }
 }
 
-void Container::xavier(size_t in_size, size_t out_size)
+void Container::random_fill(size_t in_size, size_t out_size)
 {
   float *a_ptr = RAW_PTR(this->data);
   int size = this->data.size();
@@ -89,15 +89,15 @@ void Container::xavier(size_t in_size, size_t out_size)
   thrust::device_vector<curandState> cs(size);
   curandState *cs_ptr = RAW_PTR(cs);
   float scale = std::sqrt((float)6) / std::sqrt((float)(in_size) + out_size);
-  container_xavier<<<grid_size, BLOCK_SIZE>>>(a_ptr, size, scale, cs_ptr);
+  container_random_fill<<<grid_size, BLOCK_SIZE>>>(a_ptr, size, scale, cs_ptr);
 
   CUDA_POST_KERNEL_CHECK;
 }
 
 void Container::is_size_consistent() {
   int size = 1;
-  for (int i = 0; i < this->shape.size(); i++) {
-    size *= this->shape[i];
+  for (auto it : this->shape) {
+    size *= it;
   }
   CHECK_EQ(size, this->data.size(), "Container: size error");
 }
